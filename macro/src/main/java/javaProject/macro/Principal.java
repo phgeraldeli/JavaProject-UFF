@@ -2,15 +2,18 @@ package javaProject.macro;
 
 import corejava.Console;
 import javaProject.macro.DAO.perfil.PerfilDAO;
+import javaProject.macro.DAO.perfil.PerfilDAOImpl;
 import javaProject.macro.domain.Perfil;
 import javaProject.macro.factory.DAOFactory;
+
+import java.util.List;
 
 public class Principal {
     public static void main(String[] args) {
         String nome;
         Perfil umPerfil;
 
-        PerfilDAO perfilDAO = DAOFactory.getDAO(PerfilDAO.class);
+        PerfilDAOImpl perfilDAO = DAOFactory.getDAO(PerfilDAOImpl.class);
         System.out.println(perfilDAO.toString());
         boolean continua = true;
         while (continua) {
@@ -31,10 +34,9 @@ public class Principal {
 
                     umPerfil = new Perfil(nome);
 
-                    perfilDAO.create(umPerfil);
+                    umPerfil = perfilDAO.create(umPerfil);
 
-                    System.out.println('\n' + "Produto número " +
-                            umPerfil.getId() + " incluído com sucesso!");
+                    System.out.println("Perfil Criado: \n" + umPerfil.toString());
 
                     break;
                 }
@@ -63,6 +65,13 @@ public class Principal {
                 }
 
                 case 4: {
+                    List<Perfil> lista = perfilDAO.findAll();
+                    for (Perfil perfil : lista)
+                    {
+                        System.out.println('\n' +
+                                "Id = " + perfil.getId() +
+                                "  Nome = " + perfil.getNome());
+                    }
                     break;
                 }
 

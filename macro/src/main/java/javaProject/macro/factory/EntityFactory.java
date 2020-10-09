@@ -20,7 +20,7 @@ public class EntityFactory {
     }
 
     public static EntityManager criarSessao() {
-        if (Objects.isNull(factory)) {
+        if (factory == null) {
             factory = new EntityFactory();
         }
         return factory.emf.createEntityManager();

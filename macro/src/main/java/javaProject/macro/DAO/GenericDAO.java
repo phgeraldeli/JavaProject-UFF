@@ -5,4 +5,5 @@ public interface GenericDAO<T> {
     void delete(Object id);
     T find(Object id);
     T update(T entity);
+
 }
