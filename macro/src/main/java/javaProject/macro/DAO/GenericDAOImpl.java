@@ -5,10 +5,9 @@ import javaProject.macro.factory.EntityFactory;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityNotFoundException;
 import javax.persistence.EntityTransaction;
+import javax.persistence.OptimisticLockException;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Objects;
 
 public class GenericDAOImpl<T> implements GenericDAO<T> {
@@ -89,10 +88,29 @@ public class GenericDAOImpl<T> implements GenericDAO<T> {
     }
 
     @Override
-    public T update(T entity) {
-//        EntityManager em = null;
-//        EntityTransaction tx = null;
-//        executeTransaction(() -> em.merge(entity));
+    public T update(final T entity) {
+        try {
+            em = EntityFactory.criarSessao();
+            tx = em.getTransaction();
+            tx.begin();
+
+            this.em.merge(entity);
+
+            tx.commit();
+        } catch (OptimisticLockException e) {
+            if (Objects.nonNull(tx)) {
+                tx.rollback();
+                throw new OptimisticLockException("Objeto foi modificado em tempo de execução");
+            }
+        } catch (RuntimeException e) {
+            if (Objects.nonNull(tx)) {
+                try {
+                    tx.rollback();
+                } catch (RuntimeException ignored) {}
+            }
+        } finally {
+            em.close();
+        }
         return entity;
     }
 
